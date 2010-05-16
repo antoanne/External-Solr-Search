@@ -1,0 +1,7 @@
+; $Id: apachesolr_search.info,v 1.1.2.1.2.7 2009/03/20 04:11:16 pwolanin Exp $
+name = External Apache Solr search
+description = Search on a external solr server
+dependencies[] = search
+package = Advanced Apache Solr
+core = "6.x"
+php = 5.1.4

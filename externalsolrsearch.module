@@ -1,0 +1,28 @@
+<?php
+// $Id$
+/**
+ * @file
+ * Module for seraching data from outside solr server.
+ */
+
+function externalsolrsearch_search($op = 'search', $keys = null) {
+	switch ($op) {
+		case 'name':
+			return t('Publications');
+
+		case 'search':
+			$results = array();
+			$results[] = array(
+							'link' => url('node/teste'),
+			          		'title' => 'Produções',
+							//'type' => check_plain('produções'),
+			          		//'user' => '',
+			          		//'date' => date(),
+			          		//'node' => Null,
+			          		//'extra' => Null,
+			          		//'score' => 1,
+			          		//'snippet' => search_excerpt($keys, $node->body),
+			        		);
+			return $results;
+		}
+}
