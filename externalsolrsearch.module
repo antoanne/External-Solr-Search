@@ -5,6 +5,16 @@
  * Module for seraching data from outside solr server.
  */
 
+require_once 'SolrPhpClient/Apache/Solr/Service.php';
+
+function externalsolrsearch_form_alter(&$form, $form_state, $form_id) {
+  switch ($form_id) {
+    case 'search_theme_form':
+      $form['submit']['#value'] = 'Search';
+      break;
+  }
+}
+
 function externalsolrsearch_search($op = 'search', $keys = null) {
 	switch ($op) {
 		case 'name':
@@ -12,9 +22,9 @@ function externalsolrsearch_search($op = 'search', $keys = null) {
 
 		case 'search':
 			$results = array();
-			$results[] = array(
-							'link' => url('node/teste'),
-			          		'title' => 'Produções',
+			//$results[] = array(
+							//'link' => url('node/teste'),
+			          		//'title' => 'Produções',
 							//'type' => check_plain('produções'),
 			          		//'user' => '',
 			          		//'date' => date(),
@@ -22,7 +32,24 @@ function externalsolrsearch_search($op = 'search', $keys = null) {
 			          		//'extra' => Null,
 			          		//'score' => 1,
 			          		//'snippet' => search_excerpt($keys, $node->body),
-			        		);
+			        		//);
+			
+			$solr = new Apache_Solr_Service( 'localhost', '8983', '/solr' );
+			$query = $keys;
+			$offset = true;
+			$limit = "";
+			$response = $solr->search( $query, $offset, $limit );
+			foreach ( $response->response->docs as $doc ) {
+				$results[] = array(
+					'link' => url('node/' . $doc->id),
+				    'title' => $doc->name,
+					'extra' => $doc->cat,
+				); 
+			}
+			
 			return $results;
 		}
 }
+
+
+
