@@ -7,12 +7,65 @@
 
 require_once 'SolrPhpClient/Apache/Solr/Service.php';
 
+function externalsolrsearch_menu() {
+  $items = array();
+  $items['admin/settings/externalsolrsearch'] = array(
+    'title'              => 'External Solr Search',
+    'description'        => 'Administer External Solr Search.',
+    'page callback'      => 'drupal_get_form',
+    'page arguments'     => array('externalsolrsearch_settings'),
+    'access callback'    => 'user_access',
+    'access arguments'   => array('administer search'),
+  );
+
+  return $items;
+}
+
 function externalsolrsearch_form_alter(&$form, $form_state, $form_id) {
   switch ($form_id) {
     case 'search_theme_form':
       $form['submit']['#value'] = 'Search';
       break;
   }
+}
+
+function externalsolrsearch_settings() {
+  $form = array();
+
+  $form['externalsolrsearch_host'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Solr host name'),
+    '#default_value' => variable_get('externalsolrsearch_host', 'localhost'),
+    '#description' => t('Host name of your Solr server, e.g. <code>localhost</code> or <code>example.com</code>.'),
+    '#required' => TRUE,
+  );
+  $form['externalsolrsearch_port'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Solr port'),
+    '#default_value' => variable_get('externalsolrsearch_port', '8983'),
+    '#description' => t('Port on which the Solr server listens. The Jetty example server is 8983, while Tomcat is 8080 by default.'),
+    '#required' => TRUE,
+  );
+  $form['externalsolrsearch_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Solr path'),
+    '#default_value' => variable_get('externalsolrsearch_path', '/solr'),
+    '#description' => t('Path that identifies the Solr request handler to be used.'),
+  );
+
+  $form['advanced']['externalsolrsearch_search_make_default'] = array(
+    '#type' => 'radios',
+    '#title' => t('Make External Solr Search the default'),
+    '#default_value' => variable_get('externalsolrsearch_search_make_default', 0),
+    '#options' => array(0 => t('Disabled'), 1 => t('Enabled')),
+    '#description' => t('Hides core node search, and makes the search block submit to External Solr Search'),
+  );
+  $form['advanced']['externalsolrsearch_search_default_previous'] = array(
+    '#type' => 'value',
+    '#value' => variable_get('externalsolrsearch_search_make_default', 0),
+  );
+
+return system_settings_form($form);
 }
 
 function externalsolrsearch_search($op = 'search', $keys = null) {
@@ -50,6 +103,4 @@ function externalsolrsearch_search($op = 'search', $keys = null) {
 			return $results;
 		}
 }
-
-
 
